@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { getOrCreatePlayer, updatePlayer, db, getDefenceHp } = require('../db/database');
+const { getOrCreatePlayer, db, getDefenceHp } = require('../db/database');
 const { getEligibleLevel, getLevelData, getNextLevel } = require('../data/levels');
 const { recalculateSoulsPerMin } = require('../utils/souls');
 const { buildDungeonEmbed } = require('../utils/embeds');
@@ -13,6 +13,12 @@ module.exports = {
     .setDescription('View your dungeon status.'),
 
   async execute(interaction) {
+    const age = Date.now() - interaction.createdTimestamp;
+    if (age > 2500) {
+      console.warn(`[dungeon] Dropped stale interaction (${age}ms old)`);
+      return;
+    }
+
     await interaction.deferReply();
 
     const userId = interaction.user.id;
@@ -37,11 +43,14 @@ module.exports = {
       const newSpm = recalculateSoulsPerMin(updatedPlayer);
       db.prepare(`UPDATE players SET souls_per_min = ? WHERE user_id = ? AND guild_id = ?`).run(newSpm, userId, guildId);
       const newLevelData = getLevelData(eligibleLevel);
-      await interaction.followUp({ content: `${newLevelData.emoji} **Dungeon upgraded to Level ${eligibleLevel}: ${newLevelData.name}!**\nUnlocked: ${newLevelData.unlocks.join(', ')}`, ephemeral: true });
+      await interaction.followUp({
+        content: `${newLevelData.emoji} **Dungeon upgraded to Level ${eligibleLevel}: ${newLevelData.name}!**\nUnlocked: ${newLevelData.unlocks.join(', ')}`,
+        ephemeral: true
+      });
       player = getOrCreatePlayer(userId, guildId);
     }
 
-    // Minions
+    // All minions owned
     const allMinions = db.prepare(`SELECT minion_id, quantity FROM player_minions WHERE user_id = ? AND quantity > 0`).all(userId);
     const minionsWithNames = allMinions.map(row => ({
       ...row,
@@ -49,6 +58,9 @@ module.exports = {
       emoji: MINIONS[row.minion_id]?.emoji || '👹',
     }));
     const topMinions = [...minionsWithNames].sort((a, b) => b.quantity - a.quantity).slice(0, 3);
+
+    // Defence team
+    const defenceTeam = db.prepare('SELECT minion_id, quantity FROM player_defence WHERE user_id = ?').all(userId);
 
     // Dungeon name & boss
     const levelData = getLevelData(player.dungeon_level);
@@ -63,9 +75,8 @@ module.exports = {
     const nextLevel = getNextLevel(player.dungeon_level);
 
     // Build embed
-    const embed = buildDungeonEmbed(player, dungeonName, bossTitle, topMinions, hpCurrent, hpMax, nextLevel);
+    const embed = buildDungeonEmbed(player, dungeonName, bossTitle, topMinions, hpCurrent, hpMax, nextLevel, defenceTeam);
 
-    // Edit the deferred reply with the embed
     await interaction.editReply({ embeds: [embed], content: null });
   },
 };

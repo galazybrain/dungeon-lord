@@ -84,6 +84,12 @@ module.exports = {
     .addUserOption(opt => opt.setName('target').setDescription('The player to raid.').setRequired(true)),
 
   async execute(interaction) {
+    const age = Date.now() - interaction.createdTimestamp;
+    if (age > 2500) {
+      console.warn(`[raid] Dropped stale interaction (${age}ms old)`);
+      return;
+    }
+
     await interaction.deferReply();
 
     const target = interaction.options.getUser('target');

@@ -115,4 +115,4 @@ const STARTING_REWARD = {
     '> Use `/dungeon` to check your status.',
   ].join('\n'),
 };
-
+module.exports = { pickDropEvent, RARITY_COLORS, STARTING_REWARD };
