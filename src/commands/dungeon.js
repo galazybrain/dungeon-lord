@@ -6,20 +6,21 @@ const { buildDungeonEmbed } = require('../utils/embeds');
 const { STARTING_REWARD } = require('../data/events');
 const { MINIONS } = require('../data/minions');
 const { getBossForm } = require('../data/bossforms');
+const { safeCommand } = require('../utils/safeCommand');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('dungeon')
     .setDescription('View your dungeon status.'),
 
-  async execute(interaction) {
+  execute: safeCommand(async (interaction) => {
     const age = Date.now() - interaction.createdTimestamp;
     if (age > 2500) {
       console.warn(`[dungeon] Dropped stale interaction (${age}ms old)`);
       return;
     }
 
-    await interaction.deferReply();
+    
 
     const userId = interaction.user.id;
     const guildId = interaction.guildId;
@@ -78,5 +79,5 @@ module.exports = {
     const embed = buildDungeonEmbed(player, dungeonName, bossTitle, topMinions, hpCurrent, hpMax, nextLevel, defenceTeam);
 
     await interaction.editReply({ embeds: [embed], content: null });
-  },
+  }),
 };

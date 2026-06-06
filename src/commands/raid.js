@@ -26,6 +26,7 @@ const {
 const { MINIONS } = require('../data/minions');
 const { calcPower, resolveRaid, getRaidCooldownUntil, TIER_POWER } = require('../data/combat');
 const { hasUpgrade } = require('../db/database');
+const { safeCommand } = require('../utils/safeCommand');
 
 const MIN_ATTACK_MINIONS = 10;
 
@@ -83,14 +84,14 @@ module.exports = {
     .setDescription('Raid another player\'s dungeon to steal souls.')
     .addUserOption(opt => opt.setName('target').setDescription('The player to raid.').setRequired(true)),
 
-  async execute(interaction) {
+  execute: safeCommand(async (interaction) => {
     const age = Date.now() - interaction.createdTimestamp;
     if (age > 2500) {
       console.warn(`[raid] Dropped stale interaction (${age}ms old)`);
       return;
     }
 
-    await interaction.deferReply();
+    
 
     const target = interaction.options.getUser('target');
     if (target.id === interaction.user.id) return interaction.editReply('❌ Cannot raid yourself.');
@@ -319,5 +320,5 @@ module.exports = {
         interaction.editReply({ content: '⏱️ Raid timed out.', embeds: [], components: [] }).catch(() => {});
       }
     });
-  },
+  }),
 };

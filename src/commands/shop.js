@@ -289,7 +289,7 @@ module.exports = {
     .setName('shop')
     .setDescription('Purchase minions and upgrades.'),
 
-  async execute(interaction) {
+  execute: safeCommand(async (interaction) => {
     const view = new ShopView(interaction);
     await interaction.editReply({
       embeds: [await view.buildEmbed()],
@@ -395,5 +395,5 @@ module.exports = {
     collector.on('end', () => {
       interaction.editReply({ components: [] }).catch(() => {});
     });
-  },
+  }),
 };

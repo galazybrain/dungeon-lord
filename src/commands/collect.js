@@ -15,7 +15,7 @@ module.exports = {
     .setName('collect')
     .setDescription('Gather the souls your minions have harvested.'),
 
-  async execute(interaction) {
+  execute: safeCommand(async (interaction) => {
     const userId  = interaction.user.id;
     const guildId = interaction.guildId;
 
@@ -29,7 +29,7 @@ module.exports = {
       const secsLeft = Math.ceil((COLLECT_COOLDOWN_MINUTES - minutesSince) * 60);
       return await interaction.editReply({
         content: `⏳ Your minions are still working — collect again in **${secsLeft}s**`,
-        ephemeral: true,
+        ephemeral: false,
       });
     }
 
@@ -83,7 +83,7 @@ module.exports = {
 
     // ── Reply ───────────────────────────────────────────────────────────────
     // Main collect result — public
-    const embed = buildCollectEmbed(player, finalEarned, cappedBy, night);
+    const embed = buildCollectEmbed(finalEarned, newSouls, player.souls_per_min);
     await interaction.editReply({ embeds: [embed] });
 
     
@@ -99,5 +99,5 @@ module.exports = {
         });
       }
     }
-  },
+  }),
 };

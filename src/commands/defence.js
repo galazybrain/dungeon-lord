@@ -12,6 +12,7 @@ const {
 const { getOrCreatePlayer, db, recalcDefenceHp, getDefenceHp } = require('../db/database');
 const { MINIONS } = require('../data/minions');
 const { calcPower, TIER_POWER } = require('../data/combat');
+const { safeCommand } = require('../utils/safeCommand');
 
 const MAX_DEFENDERS = 10;
 
@@ -106,8 +107,7 @@ module.exports = {
     .setName('defence')
     .setDescription('Manage your dungeon defence team.'),
 
-  async execute(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+  execute: safeCommand(async (interaction) => {
 
     getOrCreatePlayer(interaction.user.id, interaction.guildId);
 
@@ -194,5 +194,5 @@ module.exports = {
     collector.on('end', () => {
       interaction.editReply({ components: [] }).catch(() => {});
     });
-  },
+  }),
 };

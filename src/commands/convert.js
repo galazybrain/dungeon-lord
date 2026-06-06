@@ -12,7 +12,7 @@ module.exports = {
         .setRequired(true)
     ),
 
-  async execute(interaction) {
+  execute: safeCommand(async (interaction) => {
     const userId = interaction.user.id;
     const guildId = interaction.guildId;
 
@@ -50,5 +50,5 @@ module.exports = {
       content: `⛩️ **Sacrificial Altar** – You sacrificed **${soulsToConvert} souls** and gained **${bloodGained} blood**.`,
       ephemeral: true,
     });
-  },
+  }),
 };

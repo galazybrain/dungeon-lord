@@ -7,7 +7,7 @@ function safeCommand(executeFn) {
   return async (interaction) => {
     try {
       // Defer immediately (ephemeral so only the user sees loading)
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ ephemeral: false });
     } catch (deferError) {
       // If defer fails (e.g., interaction already replied), just log and continue
       console.warn(`Defer failed for ${interaction.commandName}:`, deferError.message);
@@ -23,7 +23,7 @@ function safeCommand(executeFn) {
       if (interaction.deferred) {
         await interaction.editReply({ content: errorMessage, embeds: [] }).catch(() => {});
       } else if (!interaction.replied) {
-        await interaction.reply({ content: errorMessage, ephemeral: true }).catch(() => {});
+        await interaction.reply({ content: errorMessage, ephemeral: false }).catch(() => {});
       }
     }
   };

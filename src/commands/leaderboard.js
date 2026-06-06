@@ -7,7 +7,7 @@ module.exports = {
     .setName('leaderboard')
     .setDescription('Show top players worldwide by total souls'),
 
-  async execute(interaction) {
+  execute: safeCommand(async (interaction) => {
     // No defer – we reply directly (query is very fast)
     try {
       const rows = db.prepare(`
@@ -42,5 +42,5 @@ module.exports = {
         await interaction.editReply({ content: '❌ Failed to load leaderboard. Check console.', ephemeral: true });
       }
     }
-  },
+  }),
 };

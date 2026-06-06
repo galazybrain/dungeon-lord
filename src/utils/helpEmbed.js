@@ -36,6 +36,12 @@ function getHelpEmbed() {
         '• **War Room** – +10% raid attack power (passive).',
         '• **Sacrificial Altar** – Unlocks `/convert` (100 souls → 1 blood).',
       ].join('\n'), inline: false },
+      { name: '⏰ **Reminders**', value: [
+  '`/reminder set` – Set a reminder with a message, date (YYYY-MM-DD), and time (HH:MM).',
+  '`/reminder list` – View all your active reminders and their IDs.',
+  '`/reminder cancel` – Cancel a reminder by its ID.',
+  'Reminders are sent to your DMs at the specified time.',
+].join('\n'), inline: false },
       { name: '🏆 **Progression**', value: [
         'Your dungeon level increases with lifetime souls earned.',
         'Higher levels unlock stronger minions and new upgrades.',

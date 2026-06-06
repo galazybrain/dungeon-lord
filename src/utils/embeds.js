@@ -1,3 +1,12 @@
+const { EmbedBuilder } = require('discord.js');
+function formatNumber(n) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
+  return n?.toLocaleString() ?? '0';
+}
+const COLORS = {
+  blood: 0x8B0000,
+};
 /**
  * @param {object} player
  * @param {string} dungeonName
@@ -18,6 +27,11 @@ function buildDungeonEmbed(player, dungeonName, bossTitle, topMinions, currentHp
     const bar = createProgressBar(current, required);
     progressText = `${bar} ${pct}%\n${formatNumber(current)} / ${formatNumber(required)} lifetime souls`;
   }
+function createProgressBar(current, max, length = 10) {
+  const filled = Math.round((current / max) * length);
+  const empty = length - filled;
+  return '█'.repeat(filled) + '░'.repeat(empty);
+}
 
   // Top minions
   const minionLines = topMinions.length
@@ -58,3 +72,20 @@ function buildDungeonEmbed(player, dungeonName, bossTitle, topMinions, currentHp
 
   return embed;
 }
+function buildCollectEmbed(soulsGained, totalSouls, soulsPerMin) {
+  return new EmbedBuilder()
+    .setTitle('💀 Souls Collected')
+    .setColor(COLORS.blood)
+    .setDescription(`**+${formatNumber(soulsGained)} souls** collected\nYou now hold **${formatNumber(totalSouls)} souls**`)
+    .setFooter({ text: `+${formatNumber(soulsPerMin)}/min passive income` })
+    .setTimestamp();
+}
+function buildAchievementEmbed(achievement) {
+  return new EmbedBuilder()
+    .setTitle('🏆 Achievement Unlocked!')
+    .setColor(COLORS.blood)
+    .setDescription(`**${achievement.name}**\n${achievement.description}`)
+    .setFooter({ text: achievement.reward ? `Reward: +${formatNumber(achievement.reward.souls || 0)} souls` : 'Keep it up!' })
+    .setTimestamp();
+}
+module.exports = { buildDungeonEmbed, buildCollectEmbed, buildAchievementEmbed };

@@ -8,8 +8,8 @@ module.exports = {
     .setName('ascend')
     .setDescription('Prestige your dungeon — reset for permanent power.'),
 
-  async execute(interaction) {
-    await interaction.deferReply({ ephemeral: true });
+  execute: safeCommand(async (interaction) => {
+    
 
     const player   = getOrCreatePlayer(interaction.user.id, interaction.guildId);
     const nextForm = getBossForm(player.ascension + 1);
@@ -129,5 +129,5 @@ module.exports = {
         interaction.editReply({ content: '⏱️ Ascension timed out.', embeds: [], components: [] }).catch(() => {});
       }
     });
-  },
+  }),
 };

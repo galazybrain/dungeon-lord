@@ -1,5 +1,6 @@
 const { collectSouls } = require('../utils/souls');
 const { updatePlayer, getOrCreatePlayer } = require('../db/database');
+const { buildCollectEmbed } = require('../utils/collectEmbed');
 
 module.exports = {
   async execute(message, args) {

@@ -1,4 +1,5 @@
 require('dotenv').config();
+const PREFIX = process.env.PREFIX || '!';
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
@@ -30,6 +31,12 @@ for (const file of commandFiles) {
     console.log(`✅ Loaded command: /${command.data.name}`);
   }
 }
+const { startReminderScheduler } = require('./utils/reminderScheduler');
+
+client.once('ready', () => {
+  console.log(`Logged in as ${client.user.tag}`);
+  startReminderScheduler(client); // ← add this
+});
 
 // ── Ready ─────────────────────────────────────────────────────────────────────
 
