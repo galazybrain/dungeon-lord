@@ -6,6 +6,13 @@ const path = require('path');
 const cron = require('node-cron');
 const { db } = require('./db/database');
 const { pickDropEvent, RARITY_COLORS } = require('./data/events');
+// At the top of index.js, add:
+const CONFIG_FILE = path.join(__dirname, 'data/config.json');
+
+function getConfig() {
+  if (!fs.existsSync(CONFIG_FILE)) return {};
+  return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
+}
 
 // ── Bot Client Setup ──────────────────────────────────────────────────────────
 
@@ -146,9 +153,11 @@ async function runDropEvents() {
         if (!guild) continue;
 
         // Try to find a dungeon channel, fall back to system channel
-        const channel =
-          guild.channels.cache.find(c => c.name.includes('dungeon') && c.isTextBased()) ||
-          guild.systemChannel;
+        const config = getConfig();
+const guildConfig = config[player.guild_id] || {};
+const channel = guildConfig.eventChannelId
+  ? guild.channels.cache.get(guildConfig.eventChannelId)
+  : guild.channels.cache.find(c => c.name.includes('dungeon') && c.isTextBased()) || guild.systemChannel;
 
         if (!channel) continue;
 
