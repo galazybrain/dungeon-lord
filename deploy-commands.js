@@ -7,6 +7,9 @@ const fs = require('fs');
 const commands = [];
 const commandsPath = path.join(__dirname, 'src', 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(f => f.endsWith('.js'));
+const { commands: adminCommands } = require('./commands/admin');
+// then push adminCommands into your commands array
+adminCommands.forEach(cmd => commands.push(cmd.toJSON()));
 
 for (const file of commandFiles) {
   const command = require(path.join(commandsPath, file));

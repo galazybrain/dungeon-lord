@@ -54,17 +54,20 @@ client.once('ready', () => {
 });
 
 // ── Handle Slash Commands ─────────────────────────────────────────────────────
-client.on('interactionCreate', async interaction => {
-  if (interaction.isCommand()) {
-    const command = client.commands.get(interaction.commandName);
-    if (!command) return;
+const { handleAdminCommand } = require('./commands/admin');
 
-    try {
-      await command.execute(interaction);
-    } catch (error) {
-      console.error(`Error in /${interaction.commandName}:`, error);
-      // Do NOT reply here – let the command handle its own errors
-    }
+client.on('interactionCreate', async interaction => {
+  if (['setauditlog', 'purge', 'mute'].includes(interaction.commandName)) {
+    return handleAdminCommand(interaction);
+  }
+
+  const command = client.commands.get(interaction.commandName);
+  if (!command) return;
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(`Error in /${interaction.commandName}:`, error);
   }
 });
 
