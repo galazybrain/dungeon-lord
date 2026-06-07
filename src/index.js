@@ -51,6 +51,7 @@ client.once('ready', () => {
   console.log(`\n⚔️  Dungeon Lord is online as ${client.user.tag}`);
   console.log(`📡 Serving ${client.guilds.cache.size} server(s)\n`);
   startDropEventScheduler();
+  setupAuditLog(client);
 });
 
 // ── Handle Slash Commands ─────────────────────────────────────────────────────
