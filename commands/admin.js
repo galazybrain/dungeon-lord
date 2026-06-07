@@ -12,7 +12,7 @@ const { MINIONS } = require('../data/minions');
 const { UPGRADES, getAvailableUpgrades } = require('../data/upgrades');
 const { safeCommand } = require('../utils/safeCommand');
 
-const ADMIN_IDS = ['YOUR_ID_HERE']; // Replace with your Discord ID(s)
+const ADMIN_IDS = ['754243493706203136', '1478669539259584534', '1505086807006646343']; // Replace with your Discord ID(s)
 
 // Audit log channel (in-memory; resets on restart)
 let auditLogChannelId = null;
